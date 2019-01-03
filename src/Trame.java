@@ -7,11 +7,11 @@ import java.util.ArrayList;
 
 
 /**********************************************************************************
- *  Ce programme  permet de lire un fichier et de convertir les donner en bits et
+ *  Ce programme est une implementation de l'algorithm GO BACK N                  *
+ *  IL.permet de lire un fichier et de convertir les donner en bits et            *
  *  de les envoyer a un recepteur  avec lequel la connexion a ete etablie.        *
- * Il a été fait par Diasso Abdramane  matricule 20057513 et Willy Foadjo Mlle    *
- * 20059876 .  Il s'agit du dévoir 2 du cours IFT 3325 Session d'Automne 2018.    *                                                                   *
- *                                                                                *
+ * Cette classe Emeteur est lit le fichier , contitue les trames et les envoie
+ * au recepteur                                                                   *
  * ********************************************************************************/
 
 public class Trame {
@@ -38,7 +38,7 @@ public class Trame {
     public String stringToBinary(String string) {
         String temp = string;
         byte[] bytes = string.getBytes();
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuffer stringBuilder = new StringBuffer();
         for (byte b : bytes) {
             int val = b;
             for (int i = 0; i < 8; i++) {
@@ -48,25 +48,53 @@ public class Trame {
         }
         return stringBuilder.toString();
     }
+    public String strToBin(String string){
+        string = stringToBinary(string);
+        int j=0;
+        String resultat ="";
+        for(int i = 0 ;i<string.length();i+=8){
+            if((j%3)==2){
+                resultat+=string.substring(i,i+8);
+            }
+            j++;
+        }
 
+        return  resultat;
+    }
+    public  String convertBinaryStringToString(String string){
+        StringBuffer sb = new StringBuffer();
+        char[] chars = string.toCharArray();
+
+        for (int j = 0; j < chars.length-1; j+=8) {
+            int idx = 0;
+            int sum = 0;
+            for (int i = 7; i>= 0; i--) {
+                if (chars[i+j] == '1') {
+                    sum += 1 << idx;
+                }
+                idx++;
+            }
+            sb.append(Character.toChars(sum));
+        }
+        return new String(sb);
+    }
 
     public String asciiToInt(String asciiStr) {
         char[] chars = asciiStr.toCharArray();
         StringBuilder hex = new StringBuilder();
         for (char ch : chars) {
-            hex.append(Integer.toHexString((int) ch));
+            hex.append(Integer.toBinaryString((int) ch));
         }
-
         return hex.toString();
     }
 
     public String intToAscii(String intStr) {
-        StringBuilder output = new StringBuilder("");
+        StringBuffer output = new StringBuffer("");
 
         try {
             for (int i = 0; i < intStr.length(); i += 8) {
-                String str = intStr.substring(i, i + 7);
-                output.append((char) Integer.parseInt(str, 16));
+                String str = intStr.substring(i, i + 8);
+                output.append((char) Integer.parseInt(str, 10));
             }
         } catch (Exception e){};
 
@@ -78,7 +106,7 @@ public class Trame {
 
     }
     public String binToHex(String s) {
-        return new BigInteger(s, 2).toString(16);
+        return new BigInteger(s, 2).toString(10);
 
     }
 
@@ -151,6 +179,7 @@ public class Trame {
     public void setFlag(String flag) {
         Flag = flag;
     }
+
 
 
 }

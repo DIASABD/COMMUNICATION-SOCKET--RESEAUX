@@ -1,41 +1,43 @@
 
 import java.io.*;
 
-/**********************************************************************************
- *  Ce programme  permet de lire un fichier et de convertir les donner en bits et
- *  de les envoyer a un recepteur  avec lequel la connexion a ete etablie.        *
- * Il a été fait par Diasso Abdramane  matricule 20057513 et Willy Foadjo Mlle    *
- * 20059876 .  Il s'agit du dévoir 2 du cours IFT 3325 Session d'Automne 2018.    *                                                                   *
- *                                                                                *
- * ********************************************************************************/
 
+/**********************************************************************************
+ *  Ce programme est une implementation de l'algorithm GO BACK N                  *
+ *  IL.permet de lire un fichier et de convertir les donner en bits et            *
+ *  de les envoyer a un recepteur  avec lequel la connexion a ete etablie.        *
+ * Cette classe calcul le CRC .  *
+ * ********************************************************************************/
 
 public class CRCGenerator {
 
     final  String polynome  = "10001000000100001";
 
-            public String getPolynome() {
+    public String getPolynome() {
         return polynome;
     }
 
     /**
      * Cette methode fait la division binaire . Elle prend en parametre deux tableau de bits
      * un diviseur et un dividente et retourne le resultat apres l'operation
-     * @param divisor
+     * @param divArray
      * @param memArray
      * @return
      */
 
-    static int[] divide(int divisor[], int memArray[]) {
+    static int[] divide(int divArray[], int memArray[]) {
         int currentBit = 0;
+        int X =divArray.length;
         while (true) {
-            for (int i = 0; i < divisor.length; i++)
-                memArray[currentBit  + i] = (memArray[currentBit  + i] ^ divisor[i]);
-
+            int j =0;
+            for (int i = 0; i < X; i++) {
+                memArray[currentBit + j] = (memArray[currentBit + j] ^ divArray[j]);
+                j++;
+            }
             while (memArray[currentBit ] == 0 && currentBit  != memArray.length - 1)
                 currentBit ++;
 
-            if ((memArray.length - currentBit ) < divisor.length)
+            if ((memArray.length - currentBit ) < divArray.length)
                 break;
         }
         return memArray;
@@ -52,13 +54,13 @@ public class CRCGenerator {
 
         int[] data = binTab(binString);
         int[] div;
-        int[] divisor = binTab(polynome);
+        int[] divArray = binTab(polynome);
         int[] memArray;
         int[] crc;
         int[] crcInter;
         int data_bits = data.length;
-        int divisor_bits = polynome.length();
-        int array_length = data_bits + divisor_bits - 1;
+        int divArray_bits = polynome.length();
+        int array_length = data_bits + divArray_bits - 1;
         div = new int[ array_length];
         memArray = new int[ array_length];
         crc = new int[ array_length];
@@ -69,7 +71,7 @@ public class CRCGenerator {
         for (int j = 0; j < div.length; j++) {
             memArray[j] = div[j];
         }
-        memArray = divide( divisor, memArray);
+        memArray = divide( divArray, memArray);
 
         for (int i = 0; i < div.length; i++)
         {
@@ -86,7 +88,7 @@ public class CRCGenerator {
     }
 
 
-    public static String convertBinaryStringToString(String s){
+    public  String convertBinaryStringToString(String s){
         String str = "";
         for (int i = 0; i < s.length()/8; i++) {
 
@@ -127,14 +129,14 @@ public class CRCGenerator {
             resultat+=crc[i];
         }
         boolean result = false;
-        int[] divisor =this.binTab(polynome);
+        int[] divArray =this.binTab(polynome);
         int[] rem;
         int data_bits =data.length();
         rem = new int[crc.length];
         for (int j = 0; j < crc.length; j++) {
             rem[j] = crc[j];
         }
-        rem = this.divide(divisor, rem);
+        rem = this.divide(divArray, rem);
         for (int i = 0; i < rem.length; i++) {
             if (rem[i] != 0) {
                 result = true;
@@ -172,6 +174,7 @@ public class CRCGenerator {
         return trameBit.substring(start,end).replace(trameBit.substring(start,end).charAt(charIndex)+"","");
     }
 
-
 }
+
+
 
